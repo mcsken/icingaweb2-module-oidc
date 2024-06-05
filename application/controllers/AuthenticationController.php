@@ -74,9 +74,13 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
                 $_SESSION['id_token'] = $oidc->getIdToken();
                 $claims = $oidc->requestUserInfo();
                 $username = $claims->name;
+                $usernameBlacklist = StringHelper::trimSplit($provider->usernameblacklist);
+                foreach ($usernameBlacklist as $notAllowedName){
+                    if(fnmatch($notAllowedName,$username)){
+                        throw new HttpException(401,"Username not allowed for this provider");
+                    }
+                }
             }
-
-
 
         }catch (\Throwable $e){
             Logger::error($e->getMessage());
@@ -90,13 +94,6 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
             }
         }
 
-
-        $usernameBlacklist = StringHelper::trimSplit($provider->usernameblacklist);
-        foreach ($usernameBlacklist as $notAllowedName){
-            if(fnmatch($notAllowedName,$username)){
-                throw new HttpException(401,"Username not allowed for this provider");
-            }
-        }
 
         if($authSuccess && $claims != null){
             $oidcUser= OidcUser::on(Database::get())->filter(Filter::equal('name', $username))->filter(Filter::equal('provider_id', $provider->id))->first();
