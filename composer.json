@@ -1,0 +1,15 @@
+{
+  "name": "vendor_name/oidc",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Nicolas",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "jumbojett/openid-connect-php": "^v1.0.0"
+  }
+}

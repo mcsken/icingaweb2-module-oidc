@@ -1,0 +1,6 @@
+Name: oidc
+Version: 0.5.7
+Requires:
+  Libraries: icinga-php-library (>=0.13.0), icinga-php-thirdparty (>=0.12.0)
+Description: oidc
+ This module provides the ability to add an OpenIDConnect provider like authelia or dexidp as icingaweb2 login backend
