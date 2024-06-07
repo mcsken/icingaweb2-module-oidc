@@ -13,6 +13,7 @@ CREATE TABLE tbl_provider (
     logo  varchar(255) NOT NULL,
     syncgroups LONGTEXT DEFAULT NULL,
     defaultgroup TEXT DEFAULT NULL,
+    required_groups TEXT DEFAULT NULL,
     usernameblacklist TEXT DEFAULT NULL,
     buttoncolor  varchar(255) NOT NULL,
     textcolor  varchar(255) NOT NULL,
@@ -84,4 +85,4 @@ CREATE TABLE tbl_schema (
 
 
 INSERT INTO tbl_schema (version, timestamp, success, reason)
-VALUES ('0.5.6', UNIX_TIMESTAMP() * 1000, 'y', NULL);
+VALUES ('0.5.7', UNIX_TIMESTAMP() * 1000, 'y', NULL);

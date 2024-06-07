@@ -8,10 +8,8 @@ use DirectoryIterator;
 use Icinga\Application\Hook\Common\DbMigrationStep;
 use Icinga\Application\Hook\DbMigrationHook;
 use Icinga\Application\Icinga;
-use Icinga\Application\Logger;
 use Icinga\Application\Modules\Module;
 use Icinga\Module\Oidc\Common\Database;
-use Icinga\Module\Oidc\Model\GroupMembership;
 use Icinga\Module\Oidc\Model\Schema;
 use ipl\Orm\Query;
 use ipl\Sql;
@@ -37,6 +35,9 @@ class DbMigration extends DbMigrationHook
             ),
             '0.5.6' => $this->translate(
                 'Add group filter for groupsync, and a manual default group for each provider and blacklisted usernames'
+            ),
+            '0.5.7' => $this->translate(
+                'Add required groups, which would disallow login if the user is not in one of these given groups'
             ),
 
         ];
@@ -86,17 +87,11 @@ class DbMigration extends DbMigrationHook
 
                 if (! $this->version) {
                     // Schema version table exist, but the user has probably deleted the entry!
-                    $this->version = '0.5.6';
+                    $this->version = '0.5.7';
                 }
 
             } else {
-                $lastTable = GroupMembership::on($this->getDb());
-                if (static::tableExists($conn, $lastTable->getModel()->getTableName())) {
-                    $this->version = '0.5.5';
-                }else{
-                    $this->version = '0.0.0';
-                }
-
+                $this->version = '0.0.0';
             }
         }
 

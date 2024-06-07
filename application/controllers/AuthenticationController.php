@@ -80,6 +80,7 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
                         throw new HttpException(401,"Username not allowed for this provider");
                     }
                 }
+
             }
 
         }catch (\Throwable $e){
@@ -119,6 +120,16 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
             $groupsSynclist = StringHelper::trimSplit($provider->syncgroups);
 
             if(isset($claims->groups) && is_array($claims->groups)){
+
+                if($provider->required_groups !== null && $provider->required_groups !== ""){
+                    $requiredGroups =  StringHelper::trimSplit($provider->required_groups);
+                    $hasRequiredGroup = count($this->filter_by_patterns($claims->groups, $requiredGroups)) > 0;
+                    if(!$hasRequiredGroup){
+                        throw new HttpException(401,"User has not any required group for this provider");
+                    }
+                }
+
+
                 if(isset($provider->defaultgroup) && $provider->defaultgroup !== null && $provider->defaultgroup !== ""){
                     $claims->groups[]=$provider->defaultgroup;
                     $groupsSynclist[]=$provider->defaultgroup;
@@ -128,6 +139,8 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
                 foreach ($claims->groups as $key=>$group){
                     $groupname = $group;
                     $validGroup = false;
+
+                    // todo replace with filter function
                     foreach ($groupsSynclist as $allowedGroup){
                         if(fnmatch($allowedGroup,$groupname)){
                             $validGroup =true;
@@ -210,6 +223,16 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
         $this->redirectNow("oidc/authentication/failed");
 
 
+    }
+    public function filter_by_patterns($array, $patterns) {
+        return array_filter($array, function($value) use ($patterns) {
+            foreach ($patterns as $pattern) {
+                if (fnmatch($pattern, $value)) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
     public function failedAction(){
         $this->loginAction();

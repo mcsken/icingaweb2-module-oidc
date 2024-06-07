@@ -8,6 +8,7 @@ CREATE TABLE tbl_provider
     logo    TEXT,
     syncgroups TEXT DEFAULT NULL,
     defaultgroup TEXT DEFAULT NULL,
+    required_groups TEXT DEFAULT NULL,
     usernameblacklist TEXT DEFAULT NULL,
     buttoncolor    TEXT,
     textcolor    TEXT,
@@ -61,4 +62,4 @@ CREATE TABLE tbl_schema
 );
 
 INSERT INTO tbl_schema (version, timestamp, success, reason)
-VALUES ('0.5.6', strftime('%s', 'now') * 1000, 'y', NULL);
+VALUES ('0.5.7', strftime('%s', 'now') * 1000, 'y', NULL);

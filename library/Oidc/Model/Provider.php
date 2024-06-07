@@ -70,6 +70,11 @@ class Provider extends DbModel
                 'label'=>'Defaultgroup',
                 'description'=>t('If this is set each user will get this particular group for example as a baseline of permissions'),
             ],
+            'required_groups'=>[
+                'fieldtype'=>'text',
+                'label'=>'Required Groups',
+                'description'=>t('If this is set each user will need to be in one of these groups to be able to login, for example "icinga-login, ubuntu-admin", leave empty if you do not need this.'),
+            ],
             'usernameblacklist'=>[
                 'fieldtype'=>'text',
                 'label'=>'Username Blacklist',
