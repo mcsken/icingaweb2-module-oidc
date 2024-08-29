@@ -37,7 +37,6 @@ class ProvidersController extends Controller
 
         try {
             $conn = Database::get();
-            Logger::error(serialize($conn->getAdapter()));
 
         } catch (ConfigurationError $_) {
             $this->render('missing-resource', null, true);

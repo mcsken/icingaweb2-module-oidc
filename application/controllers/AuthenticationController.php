@@ -5,6 +5,7 @@ namespace Icinga\Module\Oidc\Controllers;
 
 use Icinga\Application\Config;
 use Icinga\Application\Hook\AuditHook;
+use Icinga\Application\Hook\AuthenticationHook;
 use Icinga\Application\Icinga;
 use Icinga\Application\Logger;
 use Icinga\Authentication\Auth;
@@ -216,7 +217,7 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
             $user->setAdditional('backend_type', $backendType);
             $user->setAdditional('provider_id', $provider->id);
             $auth->setAuthenticated($user);
-
+            AuthenticationHook::triggerLogin($user);
             $this->redirectNow("dashboard");
         }
 
