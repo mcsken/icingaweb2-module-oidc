@@ -38,8 +38,7 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
         $this->view->addScriptPath(Icinga::app()->getBaseDir()
             . DIRECTORY_SEPARATOR . "application/views/scripts/");
         parent::loginAction();
-
-
+        LoginFormModifierHelper::init();
         $this->view->form=$this->view->form."\n".LoginFormModifierHelper::renderAfterForm();
 
     }
@@ -69,8 +68,17 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
             // Register what scopes you need.
             // Initiate the login process at the OP
             $oidc->addScope(['profile', 'groups','email']);
+            $redirect="dashboard";
+
+
+
 
             if($oidc->authenticate()){
+                if(isset($_COOKIE['oidc-redirect'])){
+                    $redirect = $_COOKIE['oidc-redirect'];
+                    setcookie("oidc-redirect", $redirect, time() -3600, "/icingaweb2/");
+                }
+
                 $authSuccess=true;
                 $_SESSION['id_token'] = $oidc->getIdToken();
                 $claims = $oidc->requestUserInfo();
@@ -81,6 +89,10 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
                         throw new HttpException(401,"Username not allowed for this provider");
                     }
                 }
+                if(session_status() == PHP_SESSION_ACTIVE){
+                    // Icinga wants to handle the session so we destroy ours
+                    session_destroy();
+                }
 
             }
 
@@ -89,11 +101,6 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
             Logger::error( $e->getTraceAsString());
 
 
-        } finally {
-            if(session_status() == PHP_SESSION_ACTIVE){
-                // Icinga wants to handly the session so we destroy ours
-                session_destroy();
-            }
         }
 
 
@@ -218,7 +225,7 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
             $user->setAdditional('provider_id', $provider->id);
             $auth->setAuthenticated($user);
             AuthenticationHook::triggerLogin($user);
-            $this->redirectNow("dashboard");
+            $this->redirectNow($redirect);
         }
 
         $this->redirectNow("oidc/authentication/failed");

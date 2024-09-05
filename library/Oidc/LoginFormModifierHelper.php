@@ -12,8 +12,18 @@ use ipl\Web\Url;
 class LoginFormModifierHelper
 {
 
+    public static function init()
+    {
+
+        $redirect = $_GET['redirect'];
+        if(! empty($redirect)){
+            setcookie("oidc-redirect", $redirect, time() + 300, "/icingaweb2/");
+        }
+
+    }
     public static function renderAfterForm()
     {
+
         $providers = Provider::on(Database::get())->filter(Filter::equal('enabled', 'y'));
         $fileHelper = new FileHelper(Module::get('oidc')->getConfigDir() . DIRECTORY_SEPARATOR . "files");
         $html = "";
