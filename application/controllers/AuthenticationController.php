@@ -74,9 +74,9 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
 
 
             if($oidc->authenticate()){
-                if(isset($_COOKIE['oidc-redirect'])){
+                if( !empty($_COOKIE['oidc-redirect']) ){
                     $redirect = $_COOKIE['oidc-redirect'];
-                    setcookie("oidc-redirect", $redirect, time() -3600, "/icingaweb2/");
+                    setcookie("oidc-redirect", "", time() -3600, "/icingaweb2/");
                 }
 
                 $authSuccess=true;

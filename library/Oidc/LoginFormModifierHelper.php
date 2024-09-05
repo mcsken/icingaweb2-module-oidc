@@ -15,9 +15,11 @@ class LoginFormModifierHelper
     public static function init()
     {
 
-        $redirect = $_GET['redirect'];
-        if(! empty($redirect)){
-            setcookie("oidc-redirect", $redirect, time() + 300, "/icingaweb2/");
+        if(! empty($_GET['redirect'])){
+            setcookie("oidc-redirect", $_GET['redirect'], time() + 300, "/icingaweb2/");
+        }else{
+            setcookie("oidc-redirect", "", time() -3600, "/icingaweb2/");
+
         }
 
     }
