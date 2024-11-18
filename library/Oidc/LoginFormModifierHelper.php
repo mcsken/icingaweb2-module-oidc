@@ -35,6 +35,9 @@ class LoginFormModifierHelper
             $file = $fileHelper->getFile($provider->logo);
             if ($file != false) {
                 $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                if($extension === "svg"){
+                    $extension .= "+xml";
+                }
                 $left = Html::tag("div", ['style' => 'display: inline-block; width:10%']);
                 $right = Html::tag("div", ['style' => 'display: inline-block; width:80%']);
                 $imgContent = 'data:image/' . $extension . ';base64, ' . base64_encode(file_get_contents($file['realPath']));
