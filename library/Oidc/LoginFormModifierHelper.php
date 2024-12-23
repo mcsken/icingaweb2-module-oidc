@@ -59,7 +59,7 @@ class LoginFormModifierHelper
         }
         $html .= Html::tag("style", null,
             ".button {
-                      min-width:90%;
+                      min-width:100%;
                       border-radius: 4px;
                       border: none;
                       color: white;

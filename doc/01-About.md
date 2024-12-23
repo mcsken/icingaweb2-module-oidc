@@ -5,3 +5,4 @@ This module provides the ability to add an OpenIDConnect provider like authelia 
 Please read the following chapters for more insights on this module:
 
 * [Installation](02-Installation.md#module-oidc-installation)
+* [Configuration](03-Configuration.md#module-oidc-configuration)

@@ -43,7 +43,7 @@ class Provider extends DbModel
             'url'=>[
                 'fieldtype'=>'text',
                 'label'=>'Url',
-                'description'=>t('Url to redirect the provider'),
+                'description'=>t('Url to redirect to the provider'),
                 'required'=>true
             ],
             'secret'=>[
@@ -84,18 +84,18 @@ class Provider extends DbModel
                 'fieldtype'=>'select',
                 'label'=>t('Logo'),
                 'multiOptions'=>$fileHelper->filelistAsSelect(),
-                'description'=>t('')
+                'description'=>t('Choose on of your previously uploaded logos')
             ],
             'buttoncolor'=>[
                 'fieldtype'=>'color',
                 'label'=>t('Button Color'),
-                'description'=>t(''),
+                'description'=>t('Color of this OIDC button'),
                 'required'=>true
             ],
             'textcolor'=>[
                 'fieldtype'=>'color',
                 'label'=>t('Text Color'),
-                'description'=>t(''),
+                'description'=>t('Text Color of this OIDC button'),
                 'required'=>true
             ],
             'caption'=>[
@@ -104,20 +104,25 @@ class Provider extends DbModel
                 'description'=>t('Caption for the provider'),
                 'required'=>true
             ],
+            'nooidcgroups'=>[
+                'fieldtype'=>'checkbox',
+                'label'=>t('No OIDC Groups'),
+                'description'=>t('Enable this to prevent fetching any groups from the OIDC provider'),
+            ],
             'enabled'=>[
                 'fieldtype'=>'checkbox',
                 'label'=>t('Enabled'),
-                'description'=>t('Enable or disable something'),
+                'description'=>t('Enable or disable this provider'),
             ],
             'ctime'=>[
                 'fieldtype'=>t('localDateTime'),
                 'label'=>t('Created At'),
-                'description'=>t('A Creation Time'),
+                'description'=>t('A creation time'),
             ]  ,
             'mtime'=>[
                 'fieldtype'=>t('localDateTime'),
                 'label'=>t('Modified At'),
-                'description'=>t('A Modified Time'),
+                'description'=>t('A modification time'),
             ]
         ];
     }
@@ -191,6 +196,7 @@ class Provider extends DbModel
     public function createBehaviors(Behaviors $behaviors): void
     {
         $behaviors->add((new BoolCast(['enabled'])));
+        $behaviors->add((new BoolCast(['nooidcgroups'])));
         $behaviors->add(new MillisecondTimestamp(['mtime']));
         $behaviors->add(new MillisecondTimestamp(['ctime']));
     }

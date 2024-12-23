@@ -1,26 +1,44 @@
 # Configuration <a id="module-oidc-configuration"></a>
-TODO
-## Module Configuration  <a id="module-oidc-configuration-module"></a>
+In order to use OIDC you first need to specify providers.
+Get the following information from your Provider:
+* Appname
+* Secret
+* redirect Url
 
-![image_a](img/image_a.png)
+When setting up this at your OIDC provider you need to specify an url the OIDC provider is allowed to redirect back after successful login:
+
+``` http(s)://your-icingaweb2-instance/icingaweb2/oidc/realm?name=<name of the provider> ```
 
 
-| Option                | Required | Description                              |
-| --------------------- | -------- | -----------------------------------      |
-| Name                  | **yes**  | Name of something                        |
-| xxxx                  | **yes**  | Description of xxxx.                     |
-| yyyy                  | no       | Description of yyyy                      |
+## Provider Configuration  <a id="module-oidc-configuration-provider"></a>
 
-## Reference Urls <a id="module-oidc-configuration-reference"></a>
+![Providers](img/providers.png)
 
-![image_b](img/image_b.png)
 
-Some config references...
+| Option             | Required | Description                                                                                                                                                         |
+|--------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Name               | **yes**  | A Name of the provider                                                                                                                                              |
+| Url                | **yes**  | Url to redirect to the provider.                                                                                                                                    |
+| Secret             | **yes**  | Shared secret for the provider                                                                                                                                      |
+| Appname            | **yes**  | Appname for the provider                                                                                                                                            |
+| Groups to sync     | no       | A comma seperated list of groups to sync for example "grp-icinga-admin*, grp-icinga-user*"                                                                          |
+| Defaultgroup       | no       | If this is set each user will get this particular group for example as a baseline of permissions                                                                    |
+| Required Groups    | no       | If this is set each user will need to be in one of these groups to be able to login, for example "icinga-login, ubuntu-admin", leave empty if you do not need this. |
+| Username Blacklist | no       | A comma seperated list of usernames that are not allowed to login via oidc, for example "admin, admin-*, root                                                       |
+| Logo               | no       | Choose on of your previously uploaded logos                                                                                                                         |
+| Button Color       | no       | Color of this OIDC button                                                                                                                                           |                                                                                                                               |
+| Text Color         | no       | Text Color of this OIDC button                                                                                                                                      |                                                                                                                                                            |                                                                                                                               |
+| Caption            | no       | Caption for the provider                                                                                                                                            |                                                                                                                                                            |                                                                                                                               |
+| No OIDC Groups            | no       | Enable this to prevent fetching any groups from the OIDC provider                                                                                                   |                                                                                                                                                            |                                                                                                                               |
+| Enabled            | no       | Enable or disable this provider                                                                                                                                     |                                                                                                                                                            |                                                                                                                               |
+| Created At            | no       | A creation time                                                                                                                                                     |                                                                                                                                                            |                                                                                                                               |
+| Modified At            | no       | A modification time                                                                                                                                                 |                                                                                                                                                            |                                                                                                                               |
 
-## Director Configuration  <a id="module-oidc-configuration-director"></a>
 
-![image_c](img/image_c.png)
 
-If there is any configurtion inside of icinga director describe it here
+![Provider](img/provider.png)
 
-![image_d](img/image_d.png)
+The redirect Url for the OIDC provider to redirect back to icinga in this particular case should look like this:
+> https://your-icingaweb2-instance/icingaweb2/oidc/realm?name=dex
+
+

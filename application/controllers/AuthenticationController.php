@@ -67,7 +67,12 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
 
             // Register what scopes you need.
             // Initiate the login process at the OP
-            $oidc->addScope(['profile', 'groups','email']);
+            if($provider->nooidcgroups){
+                $oidc->addScope(['profile','email']);
+            }else{
+                $oidc->addScope(['profile', 'groups', 'email']);
+            }
+
             $redirect="dashboard";
 
 
