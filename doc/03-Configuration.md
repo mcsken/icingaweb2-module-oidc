@@ -41,4 +41,13 @@ When setting up this at your OIDC provider you need to specify an url the OIDC p
 The redirect Url for the OIDC provider to redirect back to icinga in this particular case should look like this:
 > https://your-icingaweb2-instance/icingaweb2/oidc/realm?name=dex
 
+## User Configuration  <a id="module-oidc-configuration-user"></a>
+
+![User](img/user.png)
+
+After successful login via your OIDC provider your user and its groups are visible in the database.
+You can edit a user object by clicking on the name.
+
+The `mapped_local_user` can be used to impersonate a 'local' user together with the `mapped_backend`.
+
 
