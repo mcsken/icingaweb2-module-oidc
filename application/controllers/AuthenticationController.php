@@ -131,73 +131,75 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
 
             }
             $groupsSynclist = StringHelper::trimSplit($provider->syncgroups);
+            if($provider->nooidcgroups === "n" || $provider->nooidcgroups === false ){
+                if(isset($claims->groups) && is_array($claims->groups)){
 
-            if(isset($claims->groups) && is_array($claims->groups)){
+                    if($provider->required_groups !== null && $provider->required_groups !== ""){
+                        $requiredGroups =  StringHelper::trimSplit($provider->required_groups);
+                        $hasRequiredGroup = count($this->filter_by_patterns($claims->groups, $requiredGroups)) > 0;
+                        if(!$hasRequiredGroup){
+                            throw new HttpException(401,"User has not any required group for this provider");
+                        }
+                    }
 
-                if($provider->required_groups !== null && $provider->required_groups !== ""){
-                    $requiredGroups =  StringHelper::trimSplit($provider->required_groups);
-                    $hasRequiredGroup = count($this->filter_by_patterns($claims->groups, $requiredGroups)) > 0;
-                    if(!$hasRequiredGroup){
+
+                    if(isset($provider->defaultgroup) && $provider->defaultgroup !== null && $provider->defaultgroup !== ""){
+                        $claims->groups[]=$provider->defaultgroup;
+                        $groupsSynclist[]=$provider->defaultgroup;
+                    }
+
+
+                    foreach ($claims->groups as $key=>$group){
+                        $groupname = $group;
+                        $validGroup = false;
+
+                        // todo replace with filter function
+                        foreach ($groupsSynclist as $allowedGroup){
+                            if(fnmatch($allowedGroup,$groupname)){
+                                $validGroup =true;
+                                break;
+                            }
+                        }
+                        if(!$validGroup){
+                            unset($claims->groups[$key]);
+                            continue;
+                        }
+
+                        $oidcGroup= Group::on(Database::get())->filter(Filter::equal('name', $groupname))->filter(Filter::equal('provider_id', $provider->id))->first();
+                        if($oidcGroup === null){
+                            $oidcGroup = new Group();
+                            $oidcGroup->name=$groupname;
+                            $oidcGroup->provider_id=$provider->id;
+                            $oidcGroup->ctime=(new \DateTime());
+                            $oidcGroup->save();
+                        }
+
+                        $membership = GroupMembership::on(Database::get())->filter(Filter::equal('username', $oidcUser->name))->filter(Filter::equal('group_id', $oidcGroup->id))->first();
+                        if($membership === null){
+                            $membership = new GroupMembership();
+                            $membership->username=$oidcUser->name;
+                            $membership->group_id=$oidcGroup->id;
+                            $membership->provider_id=$provider->id;
+                            $membership->ctime=(new \DateTime());
+                            $membership->save();
+                        }
+
+                    }
+                    $memberships = GroupMembership::on(Database::get())->filter(Filter::equal('username', $oidcUser->name));
+                    foreach ($memberships as $membership){
+                        $group = Group::on(Database::get())->filter(Filter::equal('id', $membership->group_id))->first();
+                        if($group !== null && !in_array($group->name, $claims->groups)){
+                            $membership->delete();
+                        }
+                    }
+
+                }else{
+                    if($provider->required_groups !== null && $provider->required_groups !== ""){
+                        //since there is an empty group claim we can't satisfy required_groups
                         throw new HttpException(401,"User has not any required group for this provider");
                     }
                 }
 
-
-                if(isset($provider->defaultgroup) && $provider->defaultgroup !== null && $provider->defaultgroup !== ""){
-                    $claims->groups[]=$provider->defaultgroup;
-                    $groupsSynclist[]=$provider->defaultgroup;
-                }
-
-
-                foreach ($claims->groups as $key=>$group){
-                    $groupname = $group;
-                    $validGroup = false;
-
-                    // todo replace with filter function
-                    foreach ($groupsSynclist as $allowedGroup){
-                        if(fnmatch($allowedGroup,$groupname)){
-                            $validGroup =true;
-                            break;
-                        }
-                    }
-                    if(!$validGroup){
-                        unset($claims->groups[$key]);
-                        continue;
-                    }
-
-                    $oidcGroup= Group::on(Database::get())->filter(Filter::equal('name', $groupname))->filter(Filter::equal('provider_id', $provider->id))->first();
-                    if($oidcGroup === null){
-                        $oidcGroup = new Group();
-                        $oidcGroup->name=$groupname;
-                        $oidcGroup->provider_id=$provider->id;
-                        $oidcGroup->ctime=(new \DateTime());
-                        $oidcGroup->save();
-                    }
-
-                    $membership = GroupMembership::on(Database::get())->filter(Filter::equal('username', $oidcUser->name))->filter(Filter::equal('group_id', $oidcGroup->id))->first();
-                    if($membership === null){
-                        $membership = new GroupMembership();
-                        $membership->username=$oidcUser->name;
-                        $membership->group_id=$oidcGroup->id;
-                        $membership->provider_id=$provider->id;
-                        $membership->ctime=(new \DateTime());
-                        $membership->save();
-                    }
-
-                }
-                $memberships = GroupMembership::on(Database::get())->filter(Filter::equal('username', $oidcUser->name));
-                foreach ($memberships as $membership){
-                    $group = Group::on(Database::get())->filter(Filter::equal('id', $membership->group_id))->first();
-                    if($group !== null && !in_array($group->name, $claims->groups)){
-                        $membership->delete();
-                    }
-                }
-
-            }else{
-                if($provider->required_groups !== null && $provider->required_groups !== ""){
-                    //since there is an empty group claim we can't satisfy required_groups
-                    throw new HttpException(401,"User has not any required group for this provider");
-                }
             }
 
 

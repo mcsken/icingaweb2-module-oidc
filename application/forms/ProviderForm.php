@@ -155,7 +155,10 @@ class ProviderForm extends CompatForm
 
         $values = $this->getValues();
         $model = new Provider();
-
+        if(($values['nooidcgroups'] === 'y' || $values['nooidcgroups'] === true)
+            && ($values['required_groups'] !== null && $values['required_groups'] !== "")){
+            throw new \Exception("You can't use nooidcgroups and require_groups together");
+        }
         if ($this->id === null) {
             $values['ctime']=(new \DateTime())->format("Uv");
             $model->setValues($values);
