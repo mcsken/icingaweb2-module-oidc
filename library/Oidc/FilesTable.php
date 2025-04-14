@@ -68,19 +68,19 @@ class FilesTable extends BaseHtmlElement
                 'label' => mt('oidc', 'Action'),
                 'attributes' => ['class' => 'icon-col'],
                 'renderer' => function ($data) {
-                    $div=Html::tag("div",['style'=>'white-space: nowrap;']);
+                    $div=Html::tag("div",['class'=>'action-column']);
                     $icon=  new Icon('eye', ['title' => mt('oidc', 'View')]);
-                    $a = Html::tag("a",['target'=>'_next', 'style'=>'padding-right:1em; display:inline;','href'=>Url::fromPath('oidc/file/view',['name'=>$data])]);
+                    $a = Html::tag("a",['target'=>'_next', 'class'=>'action-column', 'href'=>Url::fromPath('oidc/file/view',['name'=>$data])]);
                     $a->add($icon);
                     $div->add($a);
 
                     $icon=  new Icon('download', ['title' => mt('oidc', 'Download')]);
-                    $a = Html::tag("a",['target'=>'_blank', 'style'=>'padding-right:1em; display:inline;','href'=>Url::fromPath('oidc/file/download',['name'=>$data])]);
+                    $a = Html::tag("a",['target'=>'_blank', 'class'=>'action-column' ,'href'=>Url::fromPath('oidc/file/download',['name'=>$data])]);
                     $a->add($icon);
                     $div->add($a);
 
                     $icon=  new Icon('trash', ['title' => mt('oidc', 'Delete')]);
-                    $a = Html::tag("a",['target'=>'_self', 'style'=>'padding-right:1em; display:inline;', 'href'=>Url::fromPath('oidc/file/delete',['name'=>$data])]);
+                    $a = Html::tag("a",['target'=>'_self', 'class'=>'action-column', 'href'=>Url::fromPath('oidc/file/delete',['name'=>$data])]);
                     $a->add($icon);
                     $div->add($a);
                     return $div;

@@ -193,6 +193,11 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
                     }
                 }
 
+            }else{
+                if($provider->required_groups !== null && $provider->required_groups !== ""){
+                    //since there is an empty group claim we can't satisfy required_groups
+                    throw new HttpException(401,"User has not any required group for this provider");
+                }
             }
 
 
@@ -249,9 +254,10 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
     }
     public function failedAction(){
         $this->loginAction();
-        $html = Html::tag('p',['style'=>'font-size:large;font-weight:900;color:red;'],"OIDC: Something went wrong!");
-
-        $this->view->form=$this->view->form.$html;
+        $div = Html::tag('div',['class'=>'icinga-module module-oidc']);
+        $html = Html::tag('p',['class'=>'oidc-error'],"OIDC: Something went wrong!");
+        $div->add($html);
+        $this->view->form=$this->view->form.$div;
         $this->_helper->viewRenderer->setRender('authentication/login', null, true);
 
     }
