@@ -39,7 +39,7 @@ $this->provideRestriction(
 );
 
 $section->add(N_('User'))
-    ->setUrl('oidc/users')
+    ->setUrl('oidc/users?sort=ctime desc')
     ->setPermission('oidc/user')
     ->setPriority(20);
 

@@ -50,6 +50,7 @@ class UsersController extends Controller
 
         $sortColumns = [
             'name' => $this->translate('Name'),
+            'ctime' => $this->translate('Created At'),
 
         ];
         $restrictor = new UserRestrictor();
