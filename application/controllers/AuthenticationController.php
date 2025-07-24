@@ -88,34 +88,47 @@ class AuthenticationController extends \Icinga\Controllers\AuthenticationControl
                 $_SESSION['id_token'] = $oidc->getIdToken();
                 $claims = $oidc->requestUserInfo();
 
-                // ---- Begin mailNickname Extraction ----
-                Logger::info('OICD Claims: ' . print_r($claims, true));
+                // ---- Begin fork modification ----
+                define('DEBUG', false);
+                
+                if (DEBUG) {
+                    Logger::info('OICD Claims: ' . print_r($claims, true));
+                }
                 $username = null;
+                // Check if mailNickname is available in OIDC mapped claims.
                 if (isset($claims->mailNickname)) {
                     $username = $claims->mailNickname;
-                    Logger::info('mailNickname found in userinfo: ' . $username);
+                    if (DEBUG) {
+                        Logger::info('mailNickname found in userinfo: ' . $username);
+                    }
                 } else {
-                    // Try to extract from id_token if not in userinfo
+                    // Try to grab mailNickname from JWT token.
                     $idToken = $oidc->getIdToken();
                     if ($idToken) {
                         $parts = explode('.', $idToken);
                         if (count($parts) === 3) {
                             $payload = base64_decode(strtr($parts[1], '-_', '+/'));
                             $decoded = json_decode($payload, true);
-                            Logger::info('Decoded id_token: ' . print_r($decoded, true));
+                            if (DEBUG) {
+                                Logger::info('Decoded id_token: ' . print_r($decoded, true));
+                            }
                             if (isset($decoded['mailNickname'])) {
                                 $username = $decoded['mailNickname'];
-                                Logger::info('mailNickname found in id_token: ' . $username);
+                                if (DEBUG) {
+                                    Logger::info('mailNickname found in id_token: ' . $username);
+                                }
                             }
                         }
                     }
-                    // Fallbacks
+                    // Default to name (azure principalName) if mailNickname is not available.
                     if (empty($username)) {
                         $username = $claims->name ?? $claims->displayName ?? '';
-                        Logger::info('mailNickname not found, fallback username: ' . $username);
+                        if (DEBUG) {
+                            Logger::info('mailNickname not found, fallback username: ' . $username);
+                        }
                     }
                 }
-                // ---- End mailNickname Extraction ----
+                // ---- End fork modification ----
 
                 $usernameBlacklist = StringHelper::trimSplit($provider->usernameblacklist);
                 foreach ($usernameBlacklist as $notAllowedName){
